@@ -13,13 +13,15 @@
         }
         
         body {
-            background: url('https://w.wallhaven.cc/full/5y/wallhaven-5ygk23.png') no-repeat center center fixed;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://w.wallhaven.cc/full/5y/wallhaven-5ygk23.png');
             background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #333;
             line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
-            backdrop-filter: blur(5px);
         }
         
         .container {
@@ -82,7 +84,7 @@
             border-bottom: 2px solid #3498db;
         }
         
-        textarea, input {
+        textarea, input, select {
             width: 100%;
             padding: 15px;
             border: 1px solid #ddd;
@@ -98,7 +100,7 @@
             font-family: monospace;
         }
         
-        textarea:focus, input:focus {
+        textarea:focus, input:focus, select:focus {
             border-color: #3498db;
             outline: none;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
@@ -121,8 +123,9 @@
             gap: 10px;
         }
         
-        .ip-item input {
+        .ip-item input, .ip-item select {
             flex: 1;
+            margin-bottom: 0;
         }
         
         .btn {
@@ -282,6 +285,40 @@
         .notification.show {
             transform: translateX(0);
         }
+        
+        .port-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .port-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .port-checkbox input {
+            width: auto;
+            margin: 0;
+        }
+        
+        .port-checkbox label {
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .port-checkbox input:checked + label {
+            color: #3498db;
+        }
+        
+        .port-section {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -297,20 +334,52 @@
                     <h2 class="section-title">主节点配置</h2>
                     
                     <div class="protocol-select">
-                        <button class="protocol-btn active" data-protocol="auto">自动识别</button>
+                        <button class="protocol-btn" data-protocol="auto">自动识别</button>
+                        <button class="protocol-btn active" data-protocol="vless">VLESS</button>
                         <button class="protocol-btn" data-protocol="ss">SS</button>
                         <button class="protocol-btn" data-protocol="ssr">SSR</button>
                         <button class="protocol-btn" data-protocol="vmess">V2Ray</button>
-                        <button class="protocol-btn" data-protocol="vless">VLESS</button>
                         <button class="protocol-btn" data-protocol="trojan">Trojan</button>
                     </div>
                     
-                    <textarea id="mainNode" placeholder="请输入主节点配置（如：vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example）"></textarea>
+                    <textarea id="mainNode" placeholder="请输入主节点配置（如：vless://uuid@domain:port?security=tls&type=ws#Example）"></textarea>
                     
+                    <!-- 端口选择区域 - 放在上方 -->
+                    <div class="port-section">
+                        <h3 class="section-title">端口选择</h3>
+                        <div class="port-checkboxes">
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-443" value="443" checked>
+                                <label for="port-443">443</label>
+                            </div>
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-2053" value="2053">
+                                <label for="port-2053">2053</label>
+                            </div>
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-2083" value="2083">
+                                <label for="port-2083">2083</label>
+                            </div>
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-2087" value="2087">
+                                <label for="port-2087">2087</label>
+                            </div>
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-2096" value="2096">
+                                <label for="port-2096">2096</label>
+                            </div>
+                            <div class="port-checkbox">
+                                <input type="checkbox" id="port-8443" value="8443">
+                                <label for="port-8443">8443</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 域名/IP选择区域 - 放在下方 -->
                     <h2 class="section-title">替换IP/域名列表</h2>
                     <div class="ip-list" id="ipList">
                         <div class="ip-item">
-                            <input type="text" class="ip-input" placeholder="输入新IP或域名（如：124.124.124.124）">
+                            <input type="text" class="ip-input" placeholder="输入新IP或域名">
                             <button class="btn btn-remove">×</button>
                         </div>
                     </div>
@@ -333,13 +402,14 @@
                 <div class="instructions">
                     <h3>使用说明</h3>
                     <ol>
-                        <li>在"主节点配置"区域输入您的节点配置（支持SS/SSR/V2Ray/VLESS/Trojan格式）</li>
-                        <li>在"替换IP/域名列表"中输入您想要替换的新IP或域名</li>
+                        <li>在"主节点配置"区域输入您的节点配置（支持VLESS/SS/SSR/V2Ray/Trojan格式）</li>
+                        <li>在上方"端口选择"区域选择需要使用的端口（可多选）</li>
+                        <li>在下方"替换IP/域名列表"中输入您想要替换的新IP或域名</li>
                         <li>点击"添加更多IP/域名"按钮可添加更多替换项</li>
                         <li>使用预设列表快速填充常用IP/域名</li>
                         <li>点击"转换节点"按钮生成新节点配置</li>
                         <li>在右侧结果区域查看并复制生成的新节点</li>
-                        <li>提示：工具会自动识别节点中的IP/域名并进行替换</li>
+                        <li>提示：工具会自动识别节点中的IP/域名和端口并进行替换</li>
                     </ol>
                 </div>
             </div>
@@ -486,32 +556,28 @@
                     document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // 更新示例文本
-                    const mainNodeTextarea = document.getElementById('mainNode');
+                    // 更新placeholder提示
+                    const mainNode = document.getElementById('mainNode');
                     const protocol = this.getAttribute('data-protocol');
                     
-                    if (protocol !== 'auto') {
-                        let exampleText = '';
-                        switch(protocol) {
-                            case 'vless':
-                                exampleText = 'vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example';
-                                break;
-                            case 'vmess':
-                                exampleText = 'vmess://eyJhZGQiOiIxMjMuMTIzLjEyMy4xMjMiLCJwb3J0IjoiNDQzIiwiaWQiOiJ1dWlkIiwic2N5IjoiYWVzLTI1Ni1nY20iLCJuZXQiOiJ0Y3AiLCJ0eXBlIjoibm9uZSIsImFscG4iOiIiLCJob3N0IjoiZXhhbXBsZS5jb20iLCJwYXRoIjoiIiwidGxzIjoidGxzIiwic25pIjoiZXhhbXBsZS5jb20ifQ==';
-                                break;
-                            case 'ss':
-                                exampleText = 'ss://YWVzLTI1Ni1nY206dGVzdA@123.123.123.123:8888#Example';
-                                break;
-                            case 'ssr':
-                                exampleText = 'ssr://MTIzLjEyMy4xMjMuMTIzOjg4ODg6b3JpZ2luOmFlcy0yNTYtY2ZiOnBsYWluOlpVbFhNRVJ1YXpZNU5EVTBaVFp1YEdSdmJITXZhVzUwTFdOa1lYUmxjeTl6ZEhKaFkydG5jbTkxYm1RNk1qTT0vP29iZnNwYXJhbT0mcHJvdG9wYXJhbT0mcmVtYXJrcz1VMEtUVXBLVFUwS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazAmZ3JvdXA9';
-                                break;
-                            case 'trojan':
-                                exampleText = 'trojan://password@123.123.123.123:443?security=tls&sni=example.com#Example';
-                                break;
-                        }
-                        mainNodeTextarea.placeholder = `请输入主节点配置（如：${exampleText}）`;
-                    } else {
-                        mainNodeTextarea.placeholder = '请输入主节点配置（支持SS/SSR/V2Ray/VLESS/Trojan格式）';
+                    switch(protocol) {
+                        case 'vless':
+                            mainNode.placeholder = '请输入主节点配置（如：vless://uuid@domain:port?security=tls&type=ws#Example）';
+                            break;
+                        case 'ss':
+                            mainNode.placeholder = '请输入主节点配置（如：ss://YWVzLTI1Ni1nY206dGVzdA@123.123.123.123:8888#Example）';
+                            break;
+                        case 'ssr':
+                            mainNode.placeholder = '请输入主节点配置（如：ssr://example.com:8888:origin:aes-256-cfb:plain:example/?obfsparam=example）';
+                            break;
+                        case 'vmess':
+                            mainNode.placeholder = '请输入主节点配置（如：vmess://eyJhZGQiOiJleGFtcGxlLmNvbSIsInBvcnQiOiI4ODg4IiwiaWQiOiJ1dWlkLWV4YW1wbxlIiwic25pIjoiZXhhbXBsZS5jb20ifQ==）';
+                            break;
+                        case 'trojan':
+                            mainNode.placeholder = '请输入主节点配置（如：trojan://password@example.com:443?allowInsecure=1&sni=example.com#Example）';
+                            break;
+                        default:
+                            mainNode.placeholder = '请输入主节点配置（支持VLESS/SS/SSR/V2Ray/Trojan格式）';
                     }
                 });
             });
@@ -554,6 +620,7 @@
             document.getElementById('convertBtn').addEventListener('click', function() {
                 const mainNode = document.getElementById('mainNode').value.trim();
                 const ipInputs = document.querySelectorAll('.ip-input');
+                const portCheckboxes = document.querySelectorAll('.port-checkbox input:checked');
                 const resultsContainer = document.getElementById('results');
                 
                 if (!mainNode) {
@@ -572,17 +639,29 @@
                     return;
                 }
                 
+                const ports = [];
+                portCheckboxes.forEach(checkbox => {
+                    ports.push(checkbox.value);
+                });
+                
+                if (ports.length === 0) {
+                    showNotification('请至少选择一个端口');
+                    return;
+                }
+                
                 // 清空结果容器
                 resultsContainer.innerHTML = '';
                 
-                // 提取原始节点中的IP/域名
+                // 提取原始节点中的IP/域名和端口
                 let originalHost = '';
+                let originalPort = '';
                 
-                // 尝试识别节点类型并提取主机信息
+                // 尝试识别节点类型并提取主机和端口信息
                 if (mainNode.includes('://')) {
                     try {
                         const url = new URL(mainNode);
                         originalHost = url.hostname;
+                        originalPort = url.port || '443'; // 默认端口
                     } catch (e) {
                         // 如果不是标准URL格式，尝试其他解析方式
                         const ipMatch = mainNode.match(/(\d{1,3}\.){3}\d{1,3}/);
@@ -593,6 +672,13 @@
                             if (domainMatch) {
                                 originalHost = domainMatch[0];
                             }
+                        }
+                        
+                        const portMatch = mainNode.match(/:(\d+)(?:\/|\?|#|$)/);
+                        if (portMatch) {
+                            originalPort = portMatch[1];
+                        } else {
+                            originalPort = '443'; // 默认端口
                         }
                     }
                 } else {
@@ -605,6 +691,13 @@
                             originalHost = domainMatch[0];
                         }
                     }
+                    
+                    const portMatch = mainNode.match(/:(\d+)(?:\/|\?|#|$)/);
+                    if (portMatch) {
+                        originalPort = portMatch[1];
+                    } else {
+                        originalPort = '443'; // 默认端口
+                    }
                 }
                 
                 if (!originalHost) {
@@ -613,18 +706,24 @@
                 }
                 
                 // 生成新节点配置
-                ips.forEach((ip, index) => {
-                    const newConfig = mainNode.replace(new RegExp(originalHost, 'g'), ip);
-                    
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'result-item';
-                    resultItem.textContent = newConfig;
-                    resultsContainer.appendChild(resultItem);
+                let nodeCount = 0;
+                ips.forEach(ip => {
+                    ports.forEach(port => {
+                        // 替换主机和端口
+                        let newConfig = mainNode.replace(new RegExp(originalHost, 'g'), ip);
+                        newConfig = newConfig.replace(new RegExp(':' + originalPort, 'g'), ':' + port);
+                        
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'result-item';
+                        resultItem.textContent = newConfig;
+                        resultsContainer.appendChild(resultItem);
+                        nodeCount++;
+                    });
                 });
                 
                 // 显示复制按钮
                 document.getElementById('copyAllBtn').style.display = 'block';
-                showNotification(`成功生成 ${ips.length} 个新节点配置`);
+                showNotification(`成功生成 ${nodeCount} 个新节点配置`);
             });
             
             // 复制全部结果
@@ -653,11 +752,11 @@
             // 初始隐藏复制按钮
             document.getElementById('copyAllBtn').style.display = 'none';
             
-            // 自动加载Cloudflare IP预设
-            document.querySelector('[data-preset="cloudflare"]').click();
-            
             // 默认选择VLESS协议
             document.querySelector('[data-protocol="vless"]').click();
+            
+            // 自动加载Cloudflare IP预设
+            document.querySelector('[data-preset="cloudflare"]').click();
         });
     </script>
 </body>

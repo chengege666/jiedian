@@ -1,0 +1,50 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每天UTC时间2点自动同步
+  workflow_dispatch:  # 允许手动触发
+  push:
+    branches: [ main ]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout fork repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 获取完整历史记录
+
+    - name: Configure Git
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@users.noreply.github.com"
+
+    - name: Add upstream repository
+      run: |
+        git remote add upstream https://github.com/chengege666/jiedian/blob/main/ai_studio_code.html
+
+    - name: Fetch upstream changes
+      run: |
+        git fetch upstream
+
+    - name: Merge upstream changes
+      run: |
+        # 尝试合并上游更改
+        git checkout main
+        if git merge upstream/main --no-edit; then
+          echo "Merge successful"
+        else
+          # 如果合并冲突，采用策略接受上游更改
+          git merge --abort
+          git reset --hard upstream/main
+          echo "采用上游版本解决冲突"
+        fi
+
+    - name: Push changes to fork
+      run: |
+        git push origin main

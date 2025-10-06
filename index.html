@@ -19,6 +19,7 @@
             line-height: 1.6;
             padding: 20px;
             min-height: 100vh;
+            backdrop-filter: blur(5px);
         }
         
         .container {
@@ -28,7 +29,6 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            backdrop-filter: blur(5px);
         }
         
         header {
@@ -297,15 +297,15 @@
                     <h2 class="section-title">主节点配置</h2>
                     
                     <div class="protocol-select">
-                        <button class="protocol-btn" data-protocol="auto">自动识别</button>
+                        <button class="protocol-btn active" data-protocol="auto">自动识别</button>
                         <button class="protocol-btn" data-protocol="ss">SS</button>
                         <button class="protocol-btn" data-protocol="ssr">SSR</button>
                         <button class="protocol-btn" data-protocol="vmess">V2Ray</button>
-                        <button class="protocol-btn active" data-protocol="vless">VLESS</button>
+                        <button class="protocol-btn" data-protocol="vless">VLESS</button>
                         <button class="protocol-btn" data-protocol="trojan">Trojan</button>
                     </div>
                     
-                    <textarea id="mainNode" placeholder="请输入主节点配置（如：vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example）">vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example</textarea>
+                    <textarea id="mainNode" placeholder="请输入主节点配置（如：vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example）"></textarea>
                     
                     <h2 class="section-title">替换IP/域名列表</h2>
                     <div class="ip-list" id="ipList">
@@ -486,21 +486,32 @@
                     document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // 根据协议更新示例文本
-                    const protocol = this.getAttribute('data-protocol');
+                    // 更新示例文本
                     const mainNodeTextarea = document.getElementById('mainNode');
+                    const protocol = this.getAttribute('data-protocol');
                     
-                    const examples = {
-                        'auto': 'vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example',
-                        'ss': 'ss://YWVzLTI1Ni1nY206dGVzdA@123.123.123.123:8888#Example',
-                        'ssr': 'ssr://MTIzLjEyMy4xMjMuMTIzOjg4ODg6YXV0aF9hZXMxMjhfc2hhMTphZXMtMjU2LWNmYjpodHRwX3NpbXBsZTpNVEl6TkRZLw',
-                        'vmess': 'vmess://eyJhZGQiOiIxMjMuMTIzLjEyMy4xMjMiLCJhaWQiOiIwIiwiaG9zdCI6IiIsImlkIjoiMTIzNDU2Nzg5MC1hYmNkLWVmZ2gtaWprbS0xMjM0NTY3ODkwIiwiibmV0IjoidGNwIiwicGF0aCI6IiIsInBvcnQiOiI0NDMiLCJwcyI6IkV4YW1wbGUiLCJzY3kiOiJhdXRvIiwic25pIjoiIiwidGxzIjoidGxzIiwidHlwZSI6Im5vbmUiLCJ2IjoiMiJ9',
-                        'vless': 'vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example',
-                        'trojan': 'trojan://password@123.123.123.123:443?security=tls&sni=example.com#Example'
-                    };
-                    
-                    if (examples[protocol]) {
-                        mainNodeTextarea.value = examples[protocol];
+                    if (protocol !== 'auto') {
+                        let exampleText = '';
+                        switch(protocol) {
+                            case 'vless':
+                                exampleText = 'vless://uuid@123.123.123.123:443?security=tls&sni=example.com#Example';
+                                break;
+                            case 'vmess':
+                                exampleText = 'vmess://eyJhZGQiOiIxMjMuMTIzLjEyMy4xMjMiLCJwb3J0IjoiNDQzIiwiaWQiOiJ1dWlkIiwic2N5IjoiYWVzLTI1Ni1nY20iLCJuZXQiOiJ0Y3AiLCJ0eXBlIjoibm9uZSIsImFscG4iOiIiLCJob3N0IjoiZXhhbXBsZS5jb20iLCJwYXRoIjoiIiwidGxzIjoidGxzIiwic25pIjoiZXhhbXBsZS5jb20ifQ==';
+                                break;
+                            case 'ss':
+                                exampleText = 'ss://YWVzLTI1Ni1nY206dGVzdA@123.123.123.123:8888#Example';
+                                break;
+                            case 'ssr':
+                                exampleText = 'ssr://MTIzLjEyMy4xMjMuMTIzOjg4ODg6b3JpZ2luOmFlcy0yNTYtY2ZiOnBsYWluOlpVbFhNRVJ1YXpZNU5EVTBaVFp1YEdSdmJITXZhVzUwTFdOa1lYUmxjeTl6ZEhKaFkydG5jbTkxYm1RNk1qTT0vP29iZnNwYXJhbT0mcHJvdG9wYXJhbT0mcmVtYXJrcz1VMEtUVXBLVFUwS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazBLVGswS1RrMEtUazAmZ3JvdXA9';
+                                break;
+                            case 'trojan':
+                                exampleText = 'trojan://password@123.123.123.123:443?security=tls&sni=example.com#Example';
+                                break;
+                        }
+                        mainNodeTextarea.placeholder = `请输入主节点配置（如：${exampleText}）`;
+                    } else {
+                        mainNodeTextarea.placeholder = '请输入主节点配置（支持SS/SSR/V2Ray/VLESS/Trojan格式）';
                     }
                 });
             });
@@ -645,7 +656,7 @@
             // 自动加载Cloudflare IP预设
             document.querySelector('[data-preset="cloudflare"]').click();
             
-            // 自动选择VLESS协议
+            // 默认选择VLESS协议
             document.querySelector('[data-protocol="vless"]').click();
         });
     </script>

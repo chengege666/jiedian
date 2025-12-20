@@ -451,7 +451,7 @@
                     "104.19.152.161" // 新增IP
                 ],
                 "cloudflare-ipv6": [ 
-                    "[2606:4700:57:2510:a733:6a9d:5669:3227]"
+                    "2606:4700:57:2510:a733:6a9d:5669:3227"
                 ],
                 visa: [
                     "www.visa.com.sg",
@@ -519,6 +519,21 @@
                 setTimeout(() => {
                     notification.classList.remove('show');
                 }, 2000);
+            }
+
+            // 检测是否为IPv6地址
+            function isIPv6(address) {
+                return address.includes(':') && 
+                       !address.includes('.') && 
+                       address.split(':').length >= 3;
+            }
+
+            // 格式化地址（处理IPv6格式）
+            function formatAddress(address) {
+                if (isIPv6(address) && !address.startsWith('[')) {
+                    return '[' + address + ']';
+                }
+                return address;
             }
 
             // 添加IP输入框
@@ -712,13 +727,13 @@
                 let nodeCount = 0;
                 ips.forEach(ip => {
                     ports.forEach(port => {
-                        // 【关键修改】只替换原始主机名/IP的第一个匹配项，以避免修改 SNI 和 Host 字段
-                        let newConfig = mainNode.replace(originalHost, ip);
+                        // 格式化IP地址（处理IPv6）
+                        const formattedIp = formatAddress(ip);
                         
-                        // 替换端口（端口通常不会重复出现在 SNI/Host 字段中，故保持全局替换）
-                        // 注意：此处的 originalPort 替换仍使用全局匹配 'g'，因为在某些复杂节点配置中，
-                        // 端口号可能重复，但如果只是替换 URI 中的端口，使用非全局可能更安全。
-                        // 由于原始逻辑是全局，我们此处暂不改动端口替换的全局性。
+                        // 【关键修改】只替换原始主机名/IP的第一个匹配项，以避免修改 SNI 和 Host 字段
+                        let newConfig = mainNode.replace(originalHost, formattedIp);
+                        
+                        // 替换端口
                         newConfig = newConfig.replace(new RegExp(':' + originalPort, 'g'), ':' + port);
                         
                         const resultItem = document.createElement('div');

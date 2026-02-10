@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
         
-        .container { /* 修正了原始代码中的 CSS 选择器，移除了开头的句号 */
+        .container {
             max-width: 1200px;
             margin: 0 auto;
             background-color: rgba(255, 255, 255, 0.95);
@@ -325,24 +325,19 @@
     <div class="container">
         <header>
             <h1>节点IP/域名转换工具</h1>
-            <p class="subtitle">输入主节点配置，批量生成替换IP/域名后的新节点</p>
+            <p class="subtitle">输入VLESS节点配置，批量生成替换IP/域名后的新节点</p>
         </header>
         
         <div class="main-content">
             <div class="input-section">
                 <div class="section">
-                    <h2 class="section-title">主节点配置</h2>
+                    <h2 class="section-title">VLESS节点配置</h2>
                     
                     <div class="protocol-select">
-                        <button class="protocol-btn" data-protocol="auto">自动识别</button>
                         <button class="protocol-btn active" data-protocol="vless">VLESS</button>
-                        <button class="protocol-btn" data-protocol="ss">SS</button>
-                        <button class="protocol-btn" data-protocol="ssr">SSR</button>
-                        <button class="protocol-btn" data-protocol="vmess">V2Ray</button>
-                        <button class="protocol-btn" data-protocol="trojan">Trojan</button>
                     </div>
                     
-                    <textarea id="mainNode" placeholder="请输入主节点配置（如：vless://uuid@domain:port?security=tls&type=ws#Example）"></textarea>
+                    <textarea id="mainNode" placeholder="请输入VLESS节点配置（如：vless://uuid@domain:port?security=tls&type=ws#Example）"></textarea>
                     
                     <div class="port-section">
                         <h3 class="section-title">端口选择</h3>
@@ -401,7 +396,7 @@
                 <div class="instructions">
                     <h3>使用说明</h3>
                     <ol>
-                        <li>在"主节点配置"区域输入您的节点配置（支持VLESS/SS/SSR/V2Ray/Trojan格式）</li>
+                        <li>在"VLESS节点配置"区域输入您的VLESS节点配置</li>
                         <li>在上方"端口选择"区域选择需要使用的端口（可多选）</li>
                         <li>在下方"替换IP/域名列表"中输入您想要替换的新IP或域名</li>
                         <li>点击"添加更多IP/域名"按钮可添加更多替换项</li>
@@ -423,7 +418,7 @@
         </div>
         
         <footer>
-            <p>节点IP/域名转换工具 &copy; 2025 - 安全高效地管理您的节点配置</p>
+            <p>节点IP/域名转换工具 &copy; 2025 - 安全高效地管理您的VLESS节点配置</p>
         </footer>
     </div>
 
@@ -568,38 +563,6 @@
                 });
             });
             
-            // 协议选择按钮
-            document.querySelectorAll('.protocol-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.protocol-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // 更新placeholder提示
-                    const mainNode = document.getElementById('mainNode');
-                    const protocol = this.getAttribute('data-protocol');
-                    
-                    switch(protocol) {
-                        case 'vless':
-                            mainNode.placeholder = '请输入主节点配置（如：vless://uuid@domain:port?security=tls&type=ws#Example）';
-                            break;
-                        case 'ss':
-                            mainNode.placeholder = '请输入主节点配置（如：ss://YWVzLTI1Ni1nY206dGVzdA@123.123.123.123:8888#Example）';
-                            break;
-                        case 'ssr':
-                            mainNode.placeholder = '请输入主节点配置（如：ssr://example.com:8888:origin:aes-256-cfb:plain:example/?obfsparam=example）';
-                            break;
-                        case 'vmess':
-                            mainNode.placeholder = '请输入主节点配置（如：vmess://eyJhZGQiOiJleGFtcGxlLmNvbSIsInBvcnQiOiI4ODg4IiwiaWQiOiJ1dWlkLWV4YW1wbxlIiwic25pIjoiZXhhbXBsZS5jb20ifQ==）';
-                            break;
-                        case 'trojan':
-                            mainNode.placeholder = '请输入主节点配置（如：trojan://password@example.com:443?allowInsecure=1&sni=example.com#Example）';
-                            break;
-                        default:
-                            mainNode.placeholder = '请输入主节点配置（支持VLESS/SS/SSR/V2Ray/Trojan格式）';
-                    }
-                });
-            });
-            
             // 预设按钮事件
             document.querySelectorAll('.preset-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -642,7 +605,7 @@
                 const resultsContainer = document.getElementById('results');
                 
                 if (!mainNode) {
-                    showNotification('请输入主节点配置');
+                    showNotification('请输入VLESS节点配置');
                     return;
                 }
                 
@@ -774,9 +737,6 @@
             
             // 初始隐藏复制按钮
             document.getElementById('copyAllBtn').style.display = 'none';
-            
-            // 默认选择VLESS协议
-            document.querySelector('[data-protocol="vless"]').click();
             
             // 自动加载Cloudflare IP预设
             document.querySelector('[data-preset="cloudflare"]').click();
